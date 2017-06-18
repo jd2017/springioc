@@ -1,0 +1,125 @@
+注解：
+	1、注解是用来做标记
+	2、注解不能单独存在
+		public enum ElementType {
+		
+		    //指的是类和接口
+		    TYPE,
+		    
+		    //属性
+		    FIELD,
+		
+		    //方法
+		    METHOD,
+		    		
+		    //方法的参数
+		    PARAMETER,
+		
+		    //构造器
+		    CONSTRUCTOR,
+		
+		    //局部变量
+		    LOCAL_VARIABLE,
+		
+		    //注解类型
+		    ANNOTATION_TYPE,
+		    //包
+		    PACKAGE
+		}
+	3、注解必须标注在类上的某一个部分
+	4、自定义注解
+		@interface说明该类是一个注解类
+		必须标明该注解的作用域范围
+		必须标明该注解的生命周期
+		/**
+		 * RetentionPolicy.RUNTIME
+		 *    在java,class,runtime中都可以使用
+		 * RetentionPolicy.CLASS
+		 *    在java,class文件中可以使用
+		 * RetentionPolicy.SOURCE
+		 *    只能在java文件中起作用
+		 */
+	5、写一个注解解析器
+	    	解析注解的
+	    如果要想得到一个类的注解，先得到class,得到方法上的注解，先得到method
+
+二、利用注解进行di 赋值操作
+   1、把person和student放入到spring容器中
+   2、在spring的配置文件中
+   		1、引入命名空间
+   			xmlns:context="http://www.springframework.org/schema/context"
+   			http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+        2、引入依赖注入的注解解析器
+        	<context:annotation-config></context:annotation-config>
+   3、在java文件中
+   		public class Person {
+			@Resource
+			private Student student;
+			private Long pid;
+			public Student getStudent() {
+				return student;
+			}
+			public Long getPid() {
+				return pid;
+			}
+		}
+		利用@Resource该注解进行注入
+原理：
+    1、启动spring容器
+    2、spring容器会为person和student创建对象
+    3、spring容器会解析
+    	<context:annotation-config></context:annotation-config>
+    	会检查所有的在spring容器中的bean
+    4、看这些bean的属性上是否有@Resource注解
+                        会检查该注解的name的属性的值
+                            如果为""
+                	则会根据该注解所在的属性的名称和spring容器中的id值做匹配
+                	      如果匹配成功，则赋值，如果匹配不成功，则按照类型进行匹配,如果匹配成功，则赋值，如果匹配不成功，则报错
+                           如果不为""
+                   	则根据该注解的name的属性的值和spring容器中的id值做匹配，
+                   	   成功，则赋值，不成功，则报错   	   
+注解和xml:
+   xml效率比较高，书写比较麻烦
+        注解效率比较低，书写比较简单
+        
+注意:基本类型和集合不能利用注解赋值 
+
+三、类扫描scan：
+步骤:
+   1、在Person类中
+   		@Component("person")
+		public class Person {
+			@Resource(name="student")
+			private Student studen;
+			
+			public Student getStudent() {
+				return studen;
+			}
+		}
+   2、在Student类中同样
+   3、在spring的配置文件中
+   		<context:component-scan 
+   			base-package="com.itheima08.spring.scan"></context:component-scan>
+原理：
+    1、启动spring容器
+    2、在base-package指定的包及子包中查找哪些类上面加有@Component
+    3、如果该类加有该注解
+    3.1 @Component("person")
+		public class Person {
+		}  	
+		==
+		<bean id="person" class="...Person">	
+	3.2	@Component("p")
+		public class Person {
+		}  	
+		==
+		<bean id="p" class="...Person">	
+	3.3	@Component
+		public class Person {
+		}  	
+		==
+		 什么不加时， id的值为类的第一个字母变成小写，其他的保持不变
+		<bean id="person" class="...Person">
+	4、当执行完第三步以后，只要加有@Component注解的类就被放入到spring容器中了
+	5、执行@Resource注解的规则

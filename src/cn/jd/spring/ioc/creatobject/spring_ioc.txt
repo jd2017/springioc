@@ -1,0 +1,119 @@
+spring容器的总的接口
+	ApplicationContext
+2、实现类：ClasspathXmlApplicationContext
+              通过classpath的方式加载xml文件
+3、WebApplicationContext接口
+     	指的是spring的web容器
+
+一、搭建spring环境
+1、在工程下创建一个lib文件夹
+2、把相应的jar包导入进去
+     spring.jar
+     commons-logging.jar
+3、创建一个包
+     com.itheima08.spring.ioc.createobject
+4、在上面的包里面创建一个类
+     HelloWorld{
+         public void hello(){
+         	System.out.println("hello");
+         }
+     }
+5、写一个配置文件
+          在该配置文件中描述了该类Hello
+      <bean id="helloWorld" 
+		class="com.itheima08.sring.ioc.createobject.HelloWorld"></bean>
+6、启动spring容器
+7、从spring容器中把对象提取出来
+	ApplicationContext ctx=  new ClassPathXmlApplicationContext("applicationContext.xml");
+		HelloSpring hs= (HelloSpring)ctx.getBean("p");
+		hs.hello();
+
+二、alias配置别名
+	<alias name="helloWorld" alias="王二麻子"/>
+	<alias name="helloWorld" alias="林志玲"/>
+一个bean可以起很多个名字应用在不用的模块
+总结：
+    当写完一个类，把一个类通过配置文件的方式放入到spring容器中的时候，spring容器会为该类创建对象
+
+三、spring容器创建对象的三种方式
+   1、默认的构造函数
+       <bean id="helloWorld" 
+       	 class="com.itheima08.spring.ioc.createobejct.method.HelloWorld"></bean>
+       	采用的是默认的构造器创建对象
+   2、静态工厂
+       1、工厂类
+       		public class HelloWorldFactory {
+				public static HelloWorld getInstance(){
+					return new HelloWorld();
+				}
+			}
+       2、在spring的配置文件中
+       		<bean id="helloWorld2" class="com.itheima08.spring.ioc.createobejct.method.HelloWorldFactory"
+			factory-method="getInstance"></bean>
+			  factory-method指明了静态工厂方法
+       		说明：
+       		    创建对象的代码在静态工厂方法中填写
+       		  spring容器仅仅调用了静态工厂方法而已
+   3、实例工厂
+   		1、工厂类
+   		    public class HelloWorldFactory2{
+   		    	public  HelloWorld getInstance(){
+					return new HelloWorld();
+				}
+   		    }
+   		2、配置文件
+   			<bean id="helloWorldFactory2" 
+   				class="com.itheima08.spring.ioc.createobejct.method.HelloWorldFactory2">
+			</bean>
+			让spring容器为HelloWorldFactory2创建对象
+		    <bean id="helloWorld3" 
+		    	factory-bean="helloWorldFactory2" 
+		    	factory-method="getInstance"></bean>
+		    告诉spring容器用helloWorldFactory2的对象调用getInstance方法从而创建helloWorlds
+
+四、spring容器创建对象的时间
+   1、在默认的情况下
+   		当启动spring容器的时候创建对象
+   		如果将来spring容器和web容器整合，当spring的配置文件中有错误的时候，当web容器启动的时候就会报错
+   		这样可以更早得发现错误
+        
+                     如果把一个数据写在该类的构造器中，那么数据会过早得加载到内存中
+   2、在指定的情况下
+   		<bean id="helloWorld" 
+		class="com.itheima08.spring.ioc.createobject.when.HelloWorld"
+		lazy-init="true"></bean>
+		配置了lazy-init为"true"时，当context.getBean时才要创建对象
+   3、在默认的情况下，在spring容器启动的时候，只要配置bean了，就会为该bean创建对象
+
+五、把一个类放入到spring容器中，该类是单例还是多例：
+	1、在默认的配置的情况下，spring中的一个bean只能产生一个对象
+	2、在spring的配置文件中
+		<bean id="helloWorld" 
+		class="com.itheima08.spring.ioc.createobject.scope.HelloWorld"
+			scope="prototype"></bean>
+		scope为"prototype"就是多例的
+	3、如果把一个bean放入到spring容器中，而且该bean是单例的，如果在该bean中声明了一个属性，
+		    该属性存放数据，该数据将成为全局的数据
+		    public class A{
+		       private List<String> sList;
+		    }
+		    如果a是单例的，那么sList就是一个共享的数据
+	4、如果一个bean配置了scope为"prototype"，那么lazy-init的值将失效，都是在getBean时才要初始化对象
+	
+	5、如果lazy-init和scope结合起来
+		scope为"prototype",lazy-init不起作用
+		scope"singleton" 按照lazy-init的规则来做
+
+六、spring容器执行的顺序：
+   1、在配置文件中
+   		<bean id="helloWorld" 
+		class="com.itheima08.spring.ioc.initdestroy.HelloWorld"
+		init-method="init"
+		destroy-method="destroy"></bean>
+   2、执行步骤
+        1、启动spring容器
+        2、把spring容器中的bean创建对象,除了(scope为"prptotype"和lazy-init为true)
+        3、调用init方法,该方法是由spring容器内部调用的
+        4、从spring容器中把对象提取出来，对象调用方法
+        5、当spring容器关闭的时候，由spring容器内部调用bean的destroy方法
+        	(该bean是单例，如果该bean是多例，则spring容器不负责销毁)

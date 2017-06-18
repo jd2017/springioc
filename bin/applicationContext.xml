@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+       	http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+        
+        <!-- 类扫描 scan -->
+        <context:component-scan 
+   			base-package="cn.jd.spring.annotation"></context:component-scan>
+        
+        <!-- 引入依赖注入注解解释器 -->   
+       <context:annotation-config></context:annotation-config>
+       <bean id="person1" class = "cn.jd.spring.annotation.Person1"/>
+       <bean id="student1" class="cn.jd.spring.annotation.Student1"></bean>
+           
+     <!-- 一、spring IOC 操作控制反转 -->
+	 <!-- 1，通过默认的构造函数创建对象；
+	 	id该bean的唯一标示；
+	 	class类的全名；
+	 	alias:为指定的别名；
+	 	默认情况下启动时bean都会创建对象，
+	 	lazy-init=true 时，调用时才创建对象；-->
+	  <bean id = "hello" class="cn.jd.spring.ioc.creatobject.HelloSpring" 
+	  	lazy-init="true" scope="prototype"></bean>
+	  <alias name="hello" alias="p"/>
+	  <!--2， 通过静态工厂创建对象
+	  	将HelloFactory类引入Spring容器；
+	  	factory-method 指定工厂方法： -->
+	  <bean id = "hello2" class="cn.jd.spring.ioc.creatobject.HelloFactory"
+	  	factory-method="getInstance">
+	  </bean>
+	   <!--3， 通过实例工厂创建对象
+	  	将HelloFactory2类引入Spring容器；
+	  	factory-bean: 指向工厂的bean  
+	  	factory-method: 指向工厂的方法-->
+	  <bean id="helloFactory2" class="cn.jd.spring.ioc.creatobject.HelloFactory2"></bean>
+	  <bean id="hello3" factory-bean="helloFactory2" factory-method="getInstance"></bean>
+	  <!--4, init destory 对象的声明周期   -->
+	  <bean id="init_destory" class = "cn.jd.spring.ioc.creatobject.InitDestoryHello"
+	  init-method="init" destroy-method="destory"></bean>
+	  
+	  <!-- 二、 Spring di 赋值的操作 -->
+	  <bean id="person" class = "cn.jd.spring.di.setter.Person">
+	  	<property name="pid" value="2"></property>
+	  	<property name="name">
+	  		<value>张三</value>
+	  	</property>
+	  	<property name="student">
+	  		<ref bean="student"/>
+	  	</property>
+	  	<!-- 对list进行装配 -->
+	  	<property name="lists">
+	  		<list>
+	  			<value>list1</value>
+	  			<value>list12</value>
+	  		</list>
+	  	</property>
+	  	<property name="sets">
+	  		<set>
+	  			<value>set1</value>
+	  			<value>set2</value>
+	  		</set>
+	  	</property>
+	  	<property name="map">
+	  		<map>
+	  			<entry key="m1">
+	  				<value>map1</value>
+	  			</entry>
+	  			<entry key="m2">
+	  				<value>map2</value>
+	  			</entry>
+	  			<entry key="m3">
+	  				<ref bean="student"/>
+	  			</entry>
+	  		</map>
+	  	</property>
+	  	<property name="properties">
+	  		<props>
+	  			<prop key="p1">
+	  			 	pro1
+	  			</prop>
+	  			<prop key="p2">
+	  				pro2
+	  			</prop>
+	  		</props>
+	  	</property>
+	  </bean>
+	  <bean id="student" class="cn.jd.spring.di.setter.Student"></bean>
+	  <!-- 利用构造器进行赋值 -->
+	  <bean id = "personContrSet" class="cn.jd.spring.di.setter.PersonContrSet">
+	  	<constructor-arg index="0" value="张三"></constructor-arg>
+	  	<constructor-arg index="1" ref="student"></constructor-arg>
+	  	<!-- 利用set方法进行赋值 -->
+	  	<property name="pid" value="2"></property>
+	  </bean>
+	 <!-- Spring ioc 与 di 的整合使用 -->
+	 <bean id="documentManager" class = "cn.jd.spring.ioc2di.document.DocumentManager">
+	 	<property name="document">
+	 		<ref bean="excel"/>
+	 	</property>
+	 </bean>
+	 <bean id="excel" class="cn.jd.spring.ioc2di.document.ExcelDocument"></bean>
+	 <bean id="word" class= "cn.jd.spring.ioc2di.document.WordDocument"></bean>
+	 
+	 <!-- mvc ioc 与 di -->
+	 <bean id="personAction" class="cn.jd.spring.ioc2di.document.PersonAction">
+	 	<property name="personService">
+	 		<ref bean="personService"/>
+	 	</property>
+	 </bean>
+	 <bean id="personService" class="cn.jd.spring.ioc2di.document.PersonServiceImpl">
+	 	<property name="personDao">
+	 		<ref bean="personDao"/>
+	 	</property>
+	 </bean>
+	 <bean id="personDao" class="cn.jd.spring.ioc2di.document.PersonDaoImpl"></bean>
+</beans>
