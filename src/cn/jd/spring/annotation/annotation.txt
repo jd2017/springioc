@@ -123,3 +123,13 @@
 		<bean id="person" class="...Person">
 	4、当执行完第三步以后，只要加有@Component注解的类就被放入到spring容器中了
 	5、执行@Resource注解的规则
+四、<context:component-scan 
+   			base-package="cn.jd.spring.annotation"></context:component-scan>
+	   支持的注解：
+	   @Component，@Repository、@Service 或@Controller，
+	   Resource
+	   @Autowired
+	   @Qualifier
+	   
+	   @PostConstruct （init方法的注解）
+	   @PreDestory		（destroy方法的注解）

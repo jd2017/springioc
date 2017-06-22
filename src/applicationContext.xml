@@ -7,11 +7,11 @@
            http://www.springframework.org/schema/context
        	http://www.springframework.org/schema/context/spring-context-2.5.xsd">
         
-        <!-- 类扫描 scan -->
+        <!-- 类扫描 scan  personMVCTest-->
         <context:component-scan 
    			base-package="cn.jd.spring.annotation"></context:component-scan>
         
-        <!-- 引入依赖注入注解解释器 -->   
+        <!-- 引入依赖注入注解Resource 解释器 -->  
        <context:annotation-config></context:annotation-config>
        <bean id="person1" class = "cn.jd.spring.annotation.Person1"/>
        <bean id="student1" class="cn.jd.spring.annotation.Student1"></bean>
