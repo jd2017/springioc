@@ -58,7 +58,7 @@ ioc和di的意义
    在编写DocumentManager类的时候，无需关注Document接口是由谁来实现的，
    	具体谁来实现的是由spring的配置文件来决定的，所以在代码端做到了完全的面向接口编程
    	
-ioc和di的意义
+ioc和di的意义: 完全面向接口编程，无需关注接口（document）的实现，通过spring配置来实现；
  二、 mvc的内容:
       1、建立三个层
           com.itheima08.spring.mvc.action
