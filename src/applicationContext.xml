@@ -22,7 +22,9 @@
 	 	class类的全名；
 	 	alias:为指定的别名；
 	 	默认情况下启动时bean都会创建对象，
-	 	lazy-init=true 时，调用时才创建对象；-->
+	 	lazy-init=true 时，调用时才创建对象；
+	 	prototype:代表多例的；
+	 	-->
 	  <bean id = "hello" class="cn.jd.spring.ioc.creatobject.HelloSpring" 
 	  	lazy-init="true" scope="prototype"></bean>
 	  <alias name="hello" alias="p"/>
